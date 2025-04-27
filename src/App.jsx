@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -17,26 +17,43 @@ function App() {
     setClave(evento.target.value)
   }
 
-  function ingresar() {
-    if (usuario == 'admin' && clave == 'admin') {
-      alert('Ingresaste')
+  async function ingresar() {
+    const peticion = await fetch('http://localhost:3000/login?usuario=' + usuario + '&clave=' + clave, { credentials: 'include' })
+    if (peticion.ok) {
       setLogueado(true)
     } else {
       alert('Datos Incorrectos!!')
     }
+    // if (usuario == 'admin' && clave == 'admin') {
+    //   alert('Ingresaste')
+    //   setLogueado(true)
+    // } else {
+    //   alert('Datos Incorrectos!!')
+    // }
   }
 
-  if (logueado) {
-    return <Conversor />
+  async function validar() {
+    const peticion = await fetch('http://localhost:3000/validar', { credentials: 'include' })
+    if (peticion.ok) {
+      setLogueado(true)
+    }
   }
-  return (
-    <>
+
+  useEffect(()=>{
+    validar()
+  }, [])
+
+if (logueado) {
+  return <Conversor />
+}
+return (
+  <>
     <h1>Inicio de Sesión</h1>
     <h2>Yeah</h2>
-      <input placeholder='Usuario' type="text" name="usuario" id="usuario" value={usuario} onChange={cambiarUsuario} />
-      <input placeholder='Clave' type="password" name="clave" id="clave" value={clave} onChange={cambiarClave} />
-      <button onClick={ingresar}>Ingresar</button>
-    </>
-  )
+    <input placeholder='Usuario' type="text" name="usuario" id="usuario" value={usuario} onChange={cambiarUsuario} />
+    <input placeholder='Clave' type="password" name="clave" id="clave" value={clave} onChange={cambiarClave} />
+    <button onClick={ingresar}>Ingresar</button>
+  </>
+)
 }
 export default App
